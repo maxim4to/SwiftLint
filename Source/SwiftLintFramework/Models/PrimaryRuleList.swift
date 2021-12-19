@@ -75,6 +75,7 @@ public let primaryRuleList = RuleList(rules: [
     FunctionDefaultParameterAtEndRule.self,
     FunctionParameterCountRule.self,
     GenericTypeNameRule.self,
+    GroupedImportsRule.self,
     IBInspectableInExtensionRule.self,
     IdenticalOperandsRule.self,
     IdentifierNameRule.self,
