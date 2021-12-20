@@ -15,17 +15,17 @@ public struct GroupedImportsConfiguration: RuleConfiguration, Equatable {
         ModulesGroup(name: "system modules", modules: Self.systemModules)
     ]
     
-    private(set) var allGroupsLargerThan: Int = 2
+    private(set) var minimumGroupSize: Int = 2
 
     public mutating func apply(configuration: Any) throws {
         guard let configuration = configuration as? [String: Any] else {
             throw ConfigurationError.unknownConfiguration
         }
         
-        if let groupingConditions = configuration["grouping_conditions"] as? [String: Any],
-           let allGroupsLargerThan = groupingConditions["all_groups_larger_than"] as? Int
+        if let groupingConditions = configuration["spacing_conditions"] as? [String: Any],
+           let minimumGroupSize = groupingConditions["minimum_group_size"] as? Int
         {
-            self.allGroupsLargerThan = allGroupsLargerThan
+            self.minimumGroupSize = minimumGroupSize
         }
         
         guard let groups = configuration["groups"] as? [[String: Any]] else {
