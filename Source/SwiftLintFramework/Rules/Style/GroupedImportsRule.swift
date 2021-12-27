@@ -33,58 +33,29 @@ public struct GroupedImportsRule: CorrectableRule, ConfigurationProviderRule, Op
             """)
         ],
         triggeringExamples: [
-            Example("import AAA\nimport ZZZ\nimport ↓BBB\nimport CCC"),
-            Example("import DDD\n// comment\nimport CCC\nimport ↓AAA"),
-            Example("@testable import CCC\nimport   ↓AAA"),
-            Example("import CCC\n@testable import   ↓AAA"),
-            Example("""
-            import FFF.B
-            import ↓EEE.A
-            #if os(Linux)
-            import DDD.A
-            import EEE.B
-            #else
-            import DDD.B
-            import ↓CCC
-            #endif
-            import AAA
-            import BBB
-            """)
+            Example("import UIKit\nimport GoogleMaps\n↓import Foundation"),
+            Example("import UIKit\nimport GoogleMaps\n↓import Foundation\nimport Alamofire"),
+            Example("@testable import GoogleMaps\n↓import UIKit")
+            Example("import GoogleMaps\n↓@testable import UIKit"),
+//            Example("""
+//            import GoogleMaps
+//            ↓import UIKit
+//            #if DEBUG
+//            import DebugPanels
+//            ↓import AVFoundation
+//            #else
+//            import ReleasePanels
+//            ↓import MetricKit
+//            #endif
+//            import AAA
+//
+//
+//            ↓import BBB
+//            """)
         ],
         corrections: [
-            Example("import AAA\nimport ZZZ\nimport ↓BBB\nimport CCC"):
-                Example("import AAA\nimport BBB\nimport CCC\nimport ZZZ"),
-            Example("import BBB // comment\nimport ↓AAA"): Example("import AAA\nimport BBB // comment"),
-            Example("import BBB\n// comment\nimport CCC\nimport ↓AAA"):
-                Example("import BBB\n// comment\nimport AAA\nimport CCC"),
-            Example("@testable import CCC\nimport  ↓AAA"): Example("import  AAA\n@testable import CCC"),
-            Example("import CCC\n@testable import  ↓AAA"): Example("@testable import  AAA\nimport CCC"),
-            Example("""
-            import FFF.B
-            import ↓EEE.A
-            #if os(Linux)
-            import DDD.A
-            import EEE.B
-            #else
-            import DDD.B
-            import ↓CCC
-            #endif
-            import AAA
-            import BBB
-            """):
-            Example("""
-            import EEE.A
-            import FFF.B
-            #if os(Linux)
-            import DDD.A
-            import EEE.B
-            #else
-            import CCC
-            import DDD.B
-            #endif
-            import AAA
-            import BBB
-            """)
+            Example("import UIKit\nimport GoogleMaps\n↓import Foundation"):
+                Example("import UIKit\nimport Foundation\n\nimport GoogleMaps")
         ]
     )
 
@@ -160,9 +131,10 @@ public struct GroupedImportsRule: CorrectableRule, ConfigurationProviderRule, Op
             for group in groups {
                 for line in group {
                     if line.index != currentImportLineIndex, currentImportLineIndex < file.lines.count {
-                        let currentImportLine = file.lines[currentImportLineIndex]
-                        let distance = line.content.distance(from: line.content.startIndex, to: currentImportLine.content.startIndex)
-                        violatingOffsets.append(line.range.location + distance)
+//                        let currentImportLine = file.lines[currentImportLineIndex]
+//                        let distance = line.content.distance(from: line.content.startIndex,
+//                                                             to: currentImportLine.content.startIndex)
+                        violatingOffsets.append(line.range.location)
                     }
                     currentImportLineIndex += 1
                 }
@@ -201,7 +173,7 @@ public struct GroupedImportsRule: CorrectableRule, ConfigurationProviderRule, Op
            let firstImportLineIndex = contents.lineAndCharacter(forCharacterOffset: firstImportLocation)?.line,
            let lastImportLineIndex = contents.lineAndCharacter(forCharacterOffset: lastImportLocation)?.line,
            firstImportLineIndex != lastImportLineIndex {
-            let importAndOtherStuffLines = lines[firstImportLineIndex...lastImportLineIndex]
+            let importAndOtherStuffLines = lines[firstImportLineIndex - 1...lastImportLineIndex - 1]
             let importLinesIndexes = importLines.map { $0.index }
             interruptingLines = importAndOtherStuffLines.filter { line in
                 !importLinesIndexes.contains(line.index) && line.content.isNotEmpty
@@ -260,7 +232,7 @@ public struct GroupedImportsRule: CorrectableRule, ConfigurationProviderRule, Op
 
         // Add the rest of the modules into separate group
         let alreadyGroupedModules = result
-            .reduce([], +)
+            .reduce(into: []) { $0.append(contentsOf: $1) }
             .map { String($0.importModule()) }
         let unknownImportLines: [Line] = linesAndModules.compactMap { line, moduleName in
             if !alreadyGroupedModules.contains(moduleName) {
@@ -277,18 +249,18 @@ public struct GroupedImportsRule: CorrectableRule, ConfigurationProviderRule, Op
     }
 }
 
-extension Line {
-    fileprivate var contentRange: NSRange {
+fileprivate extension Line {
+    var contentRange: NSRange {
         return NSRange(location: range.location, length: content.bridge().length)
     }
 
     // `Line` in this rule always contains word import
     // This method returns contents of line that are after import
-    fileprivate func importModule() -> Substring {
+    func importModule() -> Substring {
         return content[importModuleRange()]
     }
 
-    fileprivate func importModuleRange() -> Range<String.Index> {
+    func importModuleRange() -> Range<String.Index> {
         let rangeOfImport = content.range(of: "import")
         precondition(rangeOfImport != nil)
         let moduleStart = content.rangeOfCharacter(from: CharacterSet.whitespaces.inverted, options: [],

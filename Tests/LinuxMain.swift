@@ -1,4 +1,4 @@
-// Generated using Sourcery 1.5.0 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 1.6.1 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 @testable import SwiftLintFrameworkTests
 import XCTest
@@ -738,6 +738,12 @@ extension GlobTests {
     ]
 }
 
+extension GroupedImportsRuleTests {
+    static var allTests: [(String, (GroupedImportsRuleTests) -> () throws -> Void)] = [
+        ("testWithDefaultConfiguration", testWithDefaultConfiguration)
+    ]
+}
+
 extension IBInspectableInExtensionRuleTests {
     static var allTests: [(String, (IBInspectableInExtensionRuleTests) -> () throws -> Void)] = [
         ("testWithDefaultConfiguration", testWithDefaultConfiguration)
@@ -1200,6 +1206,12 @@ extension PreferNimbleRuleTests {
     ]
 }
 
+extension PreferSelfInStaticReferencesRuleTests {
+    static var allTests: [(String, (PreferSelfInStaticReferencesRuleTests) -> () throws -> Void)] = [
+        ("testWithDefaultConfiguration", testWithDefaultConfiguration)
+    ]
+}
+
 extension PreferSelfTypeOverTypeOfSelfRuleTests {
     static var allTests: [(String, (PreferSelfTypeOverTypeOfSelfRuleTests) -> () throws -> Void)] = [
         ("testWithDefaultConfiguration", testWithDefaultConfiguration)
@@ -1467,12 +1479,6 @@ extension RulesTests {
         ("testRequiredEnumCase", testRequiredEnumCase),
         ("testTrailingNewline", testTrailingNewline),
         ("testOrphanedDocComment", testOrphanedDocComment)
-    ]
-}
-
-extension PreferSelfInStaticReferencesRuleTests {
-    static var allTests: [(String, (PreferSelfInStaticReferencesRuleTests) -> () throws -> Void)] = [
-        ("testWithDefaultConfiguration", testWithDefaultConfiguration)
     ]
 }
 
@@ -1924,6 +1930,7 @@ XCTMain([
     testCase(FunctionParameterCountRuleTests.allTests),
     testCase(GenericTypeNameRuleTests.allTests),
     testCase(GlobTests.allTests),
+    testCase(GroupedImportsRuleTests.allTests),
     testCase(IBInspectableInExtensionRuleTests.allTests),
     testCase(IdenticalOperandsRuleTests.allTests),
     testCase(IdentifierNameRuleTests.allTests),
@@ -1986,6 +1993,7 @@ XCTMain([
     testCase(ParserDiagnosticsTests.allTests),
     testCase(PatternMatchingKeywordsRuleTests.allTests),
     testCase(PreferNimbleRuleTests.allTests),
+    testCase(PreferSelfInStaticReferencesRuleTests.allTests),
     testCase(PreferSelfTypeOverTypeOfSelfRuleTests.allTests),
     testCase(PreferZeroOverExplicitInitRuleTests.allTests),
     testCase(PrefixedTopLevelConstantRuleTests.allTests),
@@ -2019,7 +2027,6 @@ XCTMain([
     testCase(RuleConfigurationTests.allTests),
     testCase(RuleTests.allTests),
     testCase(RulesTests.allTests),
-    testCase(PreferSelfInStaticReferencesRuleTests.allTests),
     testCase(SelfInPropertyInitializationRuleTests.allTests),
     testCase(ShorthandOperatorRuleTests.allTests),
     testCase(SingleTestClassRuleTests.allTests),
